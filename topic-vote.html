@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlphaSight Academy — 主題投票</title>
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --gold-dark: #9A7A2E;
+      --black: #0A0A0A;
+      --dark: #111111;
+      --dark2: #1A1A1A;
+      --dark3: #242424;
+      --white: #FFFFFF;
+      --grey: #888888;
+      --grey-light: #CCCCCC;
+      --success: #4CAF50;
+      --danger: #E53935;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: flex; flex-direction: column; }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 32px;
+      background: rgba(10,10,10,0.97);
+      border-bottom: 1px solid rgba(201,168,76,0.25);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .header img { height: 124px !important; width: auto !important; }
+
+    .header-titles { flex: 1; }
+    .header-titles h1 { font-size: 1.1rem; font-weight: 800; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+    .header-titles p { font-size: 0.75rem; color: var(--grey); }
+
+    .header-badge {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .badge-host { background: rgba(229,57,53,0.15); color: #EF9A9A; border: 1px solid rgba(229,57,53,0.3); }
+    .badge-player { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+
+    /* ── LANDING ── */
+    #landing {
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: radial-gradient(ellipse at top, rgba(201,168,76,0.1) 0%, transparent 65%);
+    }
+
+    .landing-box {
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+    }
+
+    .landing-logo {
+      height: 220px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 18px rgba(201,168,76,0.35));
+    }
+
+    .landing-box h2 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .landing-box h2 span { color: var(--gold); }
+    .landing-box .sub { color: var(--grey); font-size: 0.9rem; margin-bottom: 32px; line-height: 1.6; }
+
+    .input-group { margin-bottom: 16px; text-align: left; }
+    .input-group label { display: block; font-size: 0.8rem; color: var(--grey); margin-bottom: 6px; font-weight: 600; }
+    .input-group input[type="text"],
+    .input-group input[type="password"] {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--dark3);
+      border: 2px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      color: var(--white);
+      font-size: 1rem;
+      font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus { border-color: var(--gold); }
+    .input-group input::placeholder { color: var(--grey); }
+
+    .mode-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+
+    .mode-btn {
+      padding: 14px 10px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.08);
+      background: var(--dark3);
+      color: var(--white);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+    }
+
+    .mode-btn .mode-icon { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+    .mode-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.06); }
+    .mode-btn.host-btn:hover { border-color: #EF9A9A; color: #EF9A9A; background: rgba(229,57,53,0.06); }
+
+    .err-msg { color: #EF9A9A; font-size: 0.82rem; margin-top: 10px; display: none; }
+
+    /* ── PLAYER SCREEN ── */
+    #playerScreen { padding-bottom: 120px; }
+
+    .player-body { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+
+    .player-instruction {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .player-instruction h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; }
+    .player-instruction p { color: var(--grey); font-size: 0.9rem; }
+
+    .selection-counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .counter-pill {
+      background: var(--dark2);
+      border: 2px solid rgba(201,168,76,0.3);
+      border-radius: 40px;
+      padding: 10px 28px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .counter-pill.full { border-color: var(--success); color: #81C784; }
+    .counter-pill.over { border-color: var(--danger); color: #EF9A9A; }
+
+    /* Topics grid */
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .topic-item {
+      background: var(--dark2);
+      border: 2px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 16px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      position: relative;
+    }
+
+    .topic-item:hover { border-color: rgba(201,168,76,0.35); background: rgba(201,168,76,0.04); }
+
+    .topic-item.selected {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.1);
+    }
+
+    .topic-item.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 10px; right: 12px;
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    /* Others topic — no checkmark pseudoelement when it has input */
+    .topic-item.has-input.selected::after { display: none; }
+
+    .topic-item.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .topic-item.disabled:hover { border-color: rgba(255,255,255,0.06); background: var(--dark2); }
+
+    .topic-num {
+      font-size: 0.7rem;
+      color: var(--grey);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .topic-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .topic-icon { font-size: 1.3rem; margin-bottom: 8px; display: block; }
+
+    /* Others text input */
+    .others-input {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px 10px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,168,76,0.4);
+      border-radius: 7px;
+      color: var(--white);
+      font-size: 0.82rem;
+      font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+      outline: none;
+      resize: none;
+      display: none;
+    }
+    .others-input:focus { border-color: var(--gold); }
+    .topic-item.selected .others-input { display: block; }
+
+    /* Sticky footer submit */
+    .submit-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(17,17,17,0.97);
+      border-top: 1px solid rgba(201,168,76,0.2);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      backdrop-filter: blur(8px);
+      z-index: 50;
+    }
+
+    .submit-bar .selected-preview {
+      font-size: 0.82rem;
+      color: var(--grey);
+      flex: 1;
+    }
+
+    .submit-bar .selected-preview span { color: var(--gold-light); font-weight: 600; }
+
+    .btn {
+      padding: 13px 28px;
+      border-radius: 9px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+    }
+
+    .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
+    .btn-gold:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-gold:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+    .btn-outline { background: transparent; color: var(--gold); border: 2px solid rgba(201,168,76,0.4); }
+    .btn-danger { background: rgba(229,57,53,0.15); color: #EF9A9A; border: 2px solid rgba(229,57,53,0.3); }
+
+    /* Submitted state */
+    #submittedState {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .submitted-icon { font-size: 5rem; margin-bottom: 24px; }
+    .submitted-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+    .submitted-title span { color: var(--gold); }
+    .submitted-sub { color: var(--grey); font-size: 0.95rem; max-width: 360px; line-height: 1.6; }
+
+    .submitted-picks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 24px;
+      max-width: 560px;
+    }
+
+    .pick-tag {
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.3);
+      color: var(--gold-light);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* ── HOST SCREEN ── */
+    .host-body {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    .host-top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 28px;
+    }
+
+    .host-stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .host-stat {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 16px 22px;
+      text-align: center;
+      min-width: 110px;
+    }
+
+    .host-stat .val { font-size: 2rem; font-weight: 800; color: var(--gold); }
+    .host-stat .lbl { font-size: 0.72rem; color: var(--grey); margin-top: 2px; }
+
+    .host-controls { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Host results grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .result-item {
+      background: var(--dark2);
+      border: 2px solid rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 16px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-item.top-8 {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.07);
+    }
+
+    .result-item.top-1 {
+      border-color: var(--gold-light);
+      background: rgba(201,168,76,0.13);
+      box-shadow: 0 0 20px rgba(201,168,76,0.2);
+    }
+
+    .rank-badge {
+      position: absolute;
+      top: 10px; right: 12px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .result-item.top-8 .rank-badge {
+      display: block;
+      background: rgba(201,168,76,0.2);
+      color: var(--gold);
+    }
+
+    .result-item.top-1 .rank-badge {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    .result-topic-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .result-topic-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 12px; line-height: 1.4; padding-right: 40px; }
+
+    .vote-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .vote-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .vote-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .result-item.top-8 .vote-bar-fill { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+
+    .vote-count { font-size: 1rem; font-weight: 800; color: var(--gold); min-width: 24px; }
+
+    /* Others panel in host view */
+    .others-panel {
+      margin-top: 20px;
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 14px;
+      padding: 28px;
+    }
+    .others-panel h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .others-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .others-card {
+      background: var(--dark3);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .others-card-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .others-card-text {
+      font-size: 0.88rem;
+      color: var(--grey-light);
+      line-height: 1.5;
+    }
+    .others-empty {
+      color: var(--grey);
+      font-size: 0.85rem;
+    }
+
+    /* Agenda panel */
+    .agenda-panel {
+      margin-top: 32px;
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 14px;
+      padding: 28px;
+    }
+
+    .agenda-panel h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .agenda-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .agenda-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--dark3);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .agenda-rank {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--black);
+      font-size: 0.8rem;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .agenda-name { font-size: 0.85rem; font-weight: 600; }
+    .agenda-votes { font-size: 0.75rem; color: var(--grey); margin-top: 2px; }
+
+    /* Overlays */
+    .confirm-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .confirm-overlay.show { display: flex; }
+
+    .confirm-box {
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 16px;
+      padding: 36px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+    }
+    .confirm-box h3 { font-size: 1.2rem; margin-bottom: 10px; }
+    .confirm-box p { color: var(--grey); font-size: 0.88rem; margin-bottom: 24px; }
+    .confirm-box .btn-row { display: flex; gap: 12px; justify-content: center; }
+
+    /* Live pulse dot */
+    .live-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      margin-right: 6px;
+      animation: pulse 1.5s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* ── HOST: 2× font sizes (desktop display) ── */
+    #hostScreen .header-titles h1  { font-size: 2.2rem; }
+    #hostScreen .header-titles p   { font-size: 1.5rem; }
+    #hostScreen .header-badge      { font-size: 1.5rem; }
+    #hostScreen .host-stat .val      { font-size: 4rem; }
+    #hostScreen .host-stat .lbl      { font-size: 1.44rem; }
+    #hostScreen .result-topic-icon   { font-size: 2.8rem; }
+    #hostScreen .result-topic-name   { font-size: 1.76rem; }
+    #hostScreen .vote-count          { font-size: 2rem; }
+    #hostScreen .rank-badge          { font-size: 1.4rem; }
+    #hostScreen .agenda-panel h3,
+    #hostScreen .others-panel h3     { font-size: 2rem; }
+    #hostScreen .agenda-name         { font-size: 1.7rem; }
+    #hostScreen .agenda-votes        { font-size: 1.5rem; }
+    #hostScreen .agenda-rank         { font-size: 1.6rem; width: 46px; height: 46px; }
+    #hostScreen .others-card-name    { font-size: 1.44rem; }
+    #hostScreen .others-card-text    { font-size: 1.76rem; }
+    #hostScreen .btn                 { font-size: 1.9rem; }
+
+    /* ── PARTICIPANT: optimised for 9:16 phone portrait ── */
+    #playerScreen {
+      padding-bottom: 90px;
+    }
+
+    #playerScreen .header {
+      padding: 10px 16px;
+      gap: 10px;
+    }
+
+    #playerScreen .header img {
+      height: 52px !important;
+    }
+
+    #playerScreen .header-titles h1 {
+      font-size: 1.05rem;
+      letter-spacing: 1px;
+    }
+
+    #playerScreen .header-titles p {
+      font-size: 0.72rem;
+    }
+
+    #playerScreen .header-badge {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+    }
+
+    #playerScreen .player-body {
+      padding: 16px 14px;
+      max-width: 100%;
+    }
+
+    #playerScreen .player-instruction {
+      margin-bottom: 14px;
+    }
+
+    #playerScreen .player-instruction h2 {
+      font-size: 1.45rem;
+      margin-bottom: 4px;
+    }
+
+    #playerScreen .player-instruction p {
+      font-size: 0.88rem;
+    }
+
+    #playerScreen .selection-counter {
+      margin-bottom: 14px;
+    }
+
+    #playerScreen .counter-pill {
+      font-size: 1.05rem;
+      padding: 8px 22px;
+    }
+
+    /* 2-column grid on phone — wide enough to read, compact */
+    #playerScreen .topics-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    #playerScreen .topic-item {
+      padding: 12px 10px;
+      border-radius: 10px;
+      min-height: 90px;
+    }
+
+    #playerScreen .topic-icon {
+      font-size: 1.4rem;
+      margin-bottom: 5px;
+    }
+
+    #playerScreen .topic-num {
+      font-size: 0.62rem;
+      margin-bottom: 4px;
+    }
+
+    #playerScreen .topic-name {
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+
+    /* Others text input on mobile */
+    #playerScreen .others-input {
+      font-size: 0.85rem;
+      padding: 7px 9px;
+    }
+
+    /* Submit bar */
+    #playerScreen .submit-bar {
+      padding: 10px 14px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      gap: 10px;
+    }
+
+    #playerScreen .selected-preview {
+      font-size: 0.75rem;
+    }
+
+    #playerScreen .btn {
+      font-size: 0.9rem;
+      padding: 11px 18px;
+      white-space: nowrap;
+    }
+
+    /* Submitted screen */
+    #playerScreen .submitted-icon  { font-size: 3.5rem; margin-bottom: 16px; }
+    #playerScreen .submitted-title { font-size: 1.6rem; }
+    #playerScreen .submitted-sub   { font-size: 0.88rem; }
+    #playerScreen .pick-tag        { font-size: 0.78rem; padding: 5px 12px; }
+
+    @media (max-width: 380px) {
+      #playerScreen .topics-grid { grid-template-columns: 1fr; }
+      #playerScreen .topic-name  { font-size: 0.9rem; }
+    }
+
+    @media (max-width: 640px) {
+      .results-grid { grid-template-columns: 1fr 1fr; }
+      .agenda-list { grid-template-columns: 1fr; }
+      .host-top { grid-template-columns: 1fr; }
+      .landing-box { padding: 32px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     LANDING SCREEN
+════════════════════════════════ -->
+<div class="screen active" id="landing">
+  <div class="landing-box" style="margin:auto;">
+    <img src="assets/logos/logo-gold.PNG" alt="AlphaSight" class="landing-logo" />
+    <h2>應用AI 分享會 <span>主題投票</span></h2>
+    <p class="sub">選擇您今天想學習的 8 個主題。<br>得票最高的 8 個將成為今日議程。</p>
+
+    <div class="input-group">
+      <label>您的姓名</label>
+      <input type="text" id="nameInput" placeholder="請輸入您的姓名…" maxlength="30" />
+    </div>
+
+    <div class="mode-buttons">
+      <button class="mode-btn" onclick="enterPlayer()">
+        <span class="mode-icon">🙋</span>
+        以參與者身份加入
+      </button>
+      <button class="mode-btn host-btn" onclick="showPasswordOverlay()">
+        <span class="mode-icon">🖥️</span>
+        主持人畫面
+      </button>
+    </div>
+
+    <div class="err-msg" id="errMsg">請先輸入您的姓名。</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════
+     PLAYER SCREEN
+════════════════════════════════ -->
+<div class="screen" id="playerScreen">
+
+  <div class="header">
+    <img src="assets/logos/logo-gold.PNG" alt="AlphaSight" />
+    <div class="header-titles">
+      <h1>AlphaSight Academy</h1>
+      <p id="playerNameDisplay">參與者</p>
+    </div>
+    <div class="header-badge badge-player">參與者</div>
+  </div>
+
+  <!-- Voting UI -->
+  <div id="votingUI">
+    <div class="player-body">
+      <div class="player-instruction">
+        <h2>選擇您的 <span style="color:var(--gold)">8 個主題</span></h2>
+        <p>請選擇您今天想學習的 8 個 AI 培訓主題</p>
+      </div>
+
+      <div class="selection-counter">
+        <div class="counter-pill" id="counterPill">
+          已選 <span id="selectedCount">0</span> / 8
+        </div>
+      </div>
+
+      <div class="topics-grid" id="topicsGrid"></div>
+    </div>
+
+    <div class="submit-bar">
+      <div class="selected-preview" id="selectedPreview">尚未選擇任何主題。</div>
+      <button class="btn btn-gold" id="submitBtn" onclick="submitVotes()" disabled>提交投票 →</button>
+    </div>
+  </div>
+
+  <!-- Submitted state -->
+  <div id="submittedState">
+    <div class="submitted-icon">✅</div>
+    <div class="submitted-title">投票 <span>已提交！</span></div>
+    <p class="submitted-sub">您的 8 個主題已成功記錄。主持人稍後將公佈最終議程。</p>
+    <div class="submitted-picks" id="submittedPicks"></div>
+  </div>
+
+</div>
+
+
+<!-- ════════════════════════════════
+     HOST SCREEN
+════════════════════════════════ -->
+<div class="screen" id="hostScreen">
+
+  <div class="header">
+    <img src="assets/logos/logo-gold.PNG" alt="AlphaSight" />
+    <div class="header-titles">
+      <h1>AlphaSight Academy</h1>
+      <p><span class="live-dot"></span>即時結果 — 主題投票</p>
+    </div>
+    <div class="header-badge badge-host">主持人</div>
+  </div>
+
+  <div class="host-body">
+
+    <div class="host-top">
+      <div class="host-stats">
+        <div class="host-stat">
+          <div class="val" id="hostTotalVoters">0</div>
+          <div class="lbl">參與者人數</div>
+        </div>
+        <div class="host-stat">
+          <div class="val" id="hostTotalVotes">0</div>
+          <div class="lbl">總投票數</div>
+        </div>
+        <div class="host-stat">
+          <div class="val" id="hostTopCount">0</div>
+          <div class="lbl">最高票數</div>
+        </div>
+      </div>
+      <div class="host-controls">
+        <button class="btn btn-danger" onclick="showResetConfirm()">🗑 重置全部</button>
+        <button class="btn btn-outline" onclick="goLanding()" style="font-size:0.82rem; padding:10px 16px;">← 返回</button>
+      </div>
+    </div>
+
+    <!-- All topics with vote bars -->
+    <div class="results-grid" id="resultsGrid"></div>
+
+    <!-- Top 8 Agenda -->
+    <div class="agenda-panel" id="agendaPanel">
+      <h3>🏆 今日培訓議程 — 前 8 名</h3>
+      <div class="agenda-list" id="agendaList">
+        <div style="color:var(--grey); font-size:0.85rem; grid-column:span 2;">等待投票中…</div>
+      </div>
+    </div>
+
+    <!-- Others responses -->
+    <div class="others-panel" id="othersPanel">
+      <h3>💡 其他建議 — 參與者回覆</h3>
+      <div class="others-cards" id="othersCards">
+        <div class="others-empty">暫無回覆。</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Password overlay -->
+<div class="confirm-overlay" id="passwordOverlay">
+  <div class="confirm-box">
+    <h3>主持人登入</h3>
+    <p>請輸入主持人密碼以繼續。</p>
+    <div class="input-group" style="text-align:left; margin-bottom:0;">
+      <input type="password" id="hostPasswordInput" placeholder="輸入密碼…" />
+    </div>
+    <div class="err-msg" id="passwordErr" style="margin-top:8px;">密碼錯誤，請重試。</div>
+    <div class="btn-row" style="margin-top:20px; display:flex; gap:12px; justify-content:center;">
+      <button class="btn btn-gold" onclick="checkHostPassword()">確認</button>
+      <button class="btn btn-outline" onclick="hidePasswordOverlay()">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset confirm overlay -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>重置所有投票？</h3>
+    <p>此操作將清除所有已提交的投票，且無法復原。</p>
+    <div class="btn-row">
+      <button class="btn btn-danger" onclick="resetAll()">確認重置</button>
+      <button class="btn btn-outline" onclick="hideResetConfirm()">取消</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ═══════════════════════════════
+// TOPICS DATA
+// ═══════════════════════════════
+const TOPICS = [
+  { id: 1,  icon: '✍️',  name: 'AI 寫文案、社交媒體帖文' },
+  { id: 2,  icon: '📊',  name: 'AI 自動生成簡報（PPT）' },
+  { id: 3,  icon: '🎨',  name: 'AI 繪圖、設計海報、封面' },
+  { id: 4,  icon: '🎬',  name: 'AI 製作短片、動畫' },
+  { id: 7,  icon: '📁',  name: 'AI 整理資料、彙整報告' },
+  { id: 8,  icon: '🌐',  name: 'AI 翻譯與多語言運用' },
+  { id: 10, icon: '📅',  name: 'AI 規劃行程、活動企劃' },
+  { id: 11, icon: '📧',  name: 'AI 寫電郵、求職信、履歷' },
+  { id: 13, icon: '📖',  name: 'AI 生成短劇、故事、劇本' },
+  { id: 14, icon: '📋',  name: 'AI 數據表格、Excel 優化' },
+  { id: 15, icon: '🤖',  name: 'AI 聊天機械人基本設定' },
+  { id: 16, icon: '👤',  name: 'AI 個人品牌內容規劃' },
+  { id: 17, icon: '⚙️',  name: 'AI 工作流程自動化' },
+  { id: 18, icon: '🖼️',  name: 'AI 圖片修圖、去背、特效' },
+  { id: 21, icon: '🔍',  name: 'AI 市場調查與行業分析' },
+  { id: 22, icon: '📈',  name: 'AI 數據分析與報告製作' },
+  { id: 23, icon: '👥',  name: 'AI 客戶洞察與用戶行為分析' },
+  { id: 25, icon: '💼',  name: 'AI 商業計劃書與企劃書撰寫' },
+  { id: 26, icon: '💰',  name: 'AI 財務數據整理與分析' },
+  { id: 28, icon: '🗂️',  name: 'AI 專案管理與進度規劃' },
+  { id: 29, icon: '🔄',  name: 'AI 辦公自動化：重複工作一鍵處理' },
+  { id: 30, icon: '💡',  name: '其他（請輸入您想學習的主題）', isOthers: true },
+];
+
+const MAX_PICKS = 8;
+const HOST_PASS = '2809';
+// Firebase Realtime Database REST endpoint
+const DB = 'https://alphasight-academy-default-rtdb.asia-southeast1.firebasedatabase.app/votes';
+
+let selectedIds = new Set();
+let myName = '';
+let isHost = false;
+let _refreshing = false;
+
+// ═══════════════════════════════
+// FIREBASE REST HELPERS
+// ═══════════════════════════════
+function sanitizeKey(name) {
+  // Firebase path keys cannot contain . # $ [ ] /
+  return name.trim().toLowerCase().replace(/[.#$[\]/]/g, '_');
+}
+
+async function getVotes() {
+  try {
+    const res = await fetch(`${DB}.json`);
+    if (!res.ok) return {};
+    const data = await res.json();
+    return data || {};
+  } catch { return {}; }
+}
+
+async function saveMyVotes(picks, othersText) {
+  const key = sanitizeKey(myName);
+  await fetch(`${DB}/${encodeURIComponent(key)}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: myName, picks, othersText: othersText || '' })
+  });
+}
+
+function computeTotalsFrom(votes) {
+  const counts = {};
+  let totalVoters = 0, totalVotes = 0;
+  TOPICS.forEach(t => counts[t.id] = 0);
+  Object.values(votes).forEach(v => {
+    totalVoters++;
+    (v.picks || []).forEach(id => { counts[id] = (counts[id] || 0) + 1; totalVotes++; });
+  });
+  return { counts, totalVoters, totalVotes };
+}
+
+function getOthersFrom(votes) {
+  return Object.values(votes)
+    .filter(v => (v.picks || []).includes(30) && v.othersText)
+    .map(v => ({ name: v.name, text: v.othersText }));
+}
+
+// ═══════════════════════════════
+// PASSWORD
+// ═══════════════════════════════
+function showPasswordOverlay() {
+  document.getElementById('hostPasswordInput').value = '';
+  document.getElementById('passwordErr').style.display = 'none';
+  document.getElementById('passwordOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('hostPasswordInput').focus(), 100);
+}
+
+function hidePasswordOverlay() {
+  document.getElementById('passwordOverlay').classList.remove('show');
+}
+
+function checkHostPassword() {
+  const val = document.getElementById('hostPasswordInput').value;
+  if (val === HOST_PASS) {
+    sessionStorage.setItem('hostAuth', '1');
+    hidePasswordOverlay();
+    enterHost();
+  } else {
+    document.getElementById('passwordErr').style.display = 'block';
+    document.getElementById('hostPasswordInput').value = '';
+    document.getElementById('hostPasswordInput').focus();
+  }
+}
+
+// ═══════════════════════════════
+// ENTER MODES
+// ═══════════════════════════════
+async function enterPlayer() {
+  myName = document.getElementById('nameInput').value.trim();
+  if (!myName) { showErr(); return; }
+  isHost = false;
+  showScreen('playerScreen');
+  document.getElementById('playerNameDisplay').textContent = myName;
+  renderTopics();
+  // If this name already voted, show their submitted state
+  const votes = await getVotes();
+  const existing = votes[sanitizeKey(myName)];
+  if (existing) showSubmittedState(existing.picks);
+}
+
+function enterHost() {
+  isHost = true;
+  showScreen('hostScreen');
+  hostRefresh();
+  setInterval(hostRefresh, 3000);
+}
+
+function goLanding() { showScreen('landing'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showErr() {
+  const e = document.getElementById('errMsg');
+  e.style.display = 'block';
+  setTimeout(() => e.style.display = 'none', 2500);
+}
+
+// ═══════════════════════════════
+// PLAYER — TOPIC GRID
+// ═══════════════════════════════
+function renderTopics() {
+  const grid = document.getElementById('topicsGrid');
+  grid.innerHTML = '';
+  TOPICS.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'topic-item' + (t.isOthers ? ' has-input' : '');
+    div.id = 'topic_' + t.id;
+    div.innerHTML = `
+      <span class="topic-icon">${t.icon}</span>
+      <div class="topic-name">${t.name}</div>
+      ${t.isOthers ? `<textarea class="others-input" id="othersText" rows="2" placeholder="請輸入您想學習的內容…" onclick="event.stopPropagation()"></textarea>` : ''}
+    `;
+    div.onclick = () => toggleTopic(t.id);
+    grid.appendChild(div);
+  });
+}
+
+function toggleTopic(id) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+  } else {
+    if (selectedIds.size >= MAX_PICKS) return;
+    selectedIds.add(id);
+  }
+  updatePlayerUI();
+}
+
+function updatePlayerUI() {
+  const count = selectedIds.size;
+  const pill = document.getElementById('counterPill');
+  document.getElementById('selectedCount').textContent = count;
+
+  pill.className = 'counter-pill';
+  if (count === MAX_PICKS) pill.classList.add('full');
+  else if (count > MAX_PICKS) pill.classList.add('over');
+
+  TOPICS.forEach(t => {
+    const el = document.getElementById('topic_' + t.id);
+    if (!el) return;
+    el.classList.toggle('selected', selectedIds.has(t.id));
+    el.classList.toggle('disabled', !selectedIds.has(t.id) && count >= MAX_PICKS);
+  });
+
+  const names = [...selectedIds].map(id => {
+    const t = TOPICS.find(t => t.id === id);
+    return t ? t.icon + ' ' + (t.isOthers ? '其他' : t.name) : '';
+  });
+  document.getElementById('selectedPreview').innerHTML = count > 0
+    ? `<span>已選 ${count} 個：</span>${names.slice(0,3).join('、')}${count > 3 ? ` 等共 ${count} 項` : ''}`
+    : '尚未選擇任何主題。';
+
+  document.getElementById('submitBtn').disabled = count !== MAX_PICKS;
+}
+
+async function submitVotes() {
+  if (selectedIds.size !== MAX_PICKS) return;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '提交中…';
+  const picks = [...selectedIds];
+  const othersInput = document.getElementById('othersText');
+  const othersText = othersInput ? othersInput.value.trim() : '';
+  await saveMyVotes(picks, othersText);
+  showSubmittedState(picks);
+}
+
+function showSubmittedState(picks) {
+  document.getElementById('votingUI').style.display = 'none';
+  const state = document.getElementById('submittedState');
+  state.style.display = 'flex';
+  const tagsEl = document.getElementById('submittedPicks');
+  tagsEl.innerHTML = picks.map(id => {
+    const t = TOPICS.find(t => t.id === id);
+    if (!t) return '';
+    return `<span class="pick-tag">${t.icon} ${t.isOthers ? '其他' : t.name}</span>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+// HOST — LIVE RESULTS
+// ═══════════════════════════════
+async function hostRefresh() {
+  if (!isHost || _refreshing) return;
+  _refreshing = true;
+  try {
+    const votes = await getVotes();
+    const { counts, totalVoters, totalVotes } = computeTotalsFrom(votes);
+    const othersResponses = getOthersFrom(votes);
+
+    document.getElementById('hostTotalVoters').textContent = totalVoters;
+    document.getElementById('hostTotalVotes').textContent = totalVotes;
+
+    const sorted = [...TOPICS].sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0));
+    const top8Ids = new Set(sorted.slice(0, 8).filter(t => (counts[t.id] || 0) > 0).map(t => t.id));
+    const topCount = counts[sorted[0]?.id] || 0;
+    document.getElementById('hostTopCount').textContent = topCount;
+
+    const maxVotes = Math.max(1, ...Object.values(counts));
+    const grid = document.getElementById('resultsGrid');
+    grid.innerHTML = '';
+
+    sorted.forEach((t, i) => {
+      const v = counts[t.id] || 0;
+      const pct = Math.round((v / maxVotes) * 100);
+      const isTop = top8Ids.has(t.id);
+      const isFirst = i === 0 && v > 0;
+      const div = document.createElement('div');
+      div.className = 'result-item' + (isFirst ? ' top-1' : isTop ? ' top-8' : '');
+      div.innerHTML = `
+        <div class="rank-badge">${isFirst ? '🥇 #1' : '#' + (i+1)}</div>
+        <div class="result-topic-icon">${t.icon}</div>
+        <div class="result-topic-name">${t.name}</div>
+        <div class="vote-row">
+          <div class="vote-bar-wrap">
+            <div class="vote-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="vote-count">${v}</div>
+        </div>
+      `;
+      grid.appendChild(div);
+    });
+
+    // Others panel
+    const othersCards = document.getElementById('othersCards');
+    if (othersResponses.length === 0) {
+      othersCards.innerHTML = `<div class="others-empty">暫無回覆。</div>`;
+    } else {
+      othersCards.innerHTML = othersResponses.map(r => `
+        <div class="others-card">
+          <div class="others-card-name">${r.name}</div>
+          <div class="others-card-text">${r.text}</div>
+        </div>
+      `).join('');
+    }
+
+    // Agenda — top 8 with votes only
+    const agenda = sorted.filter(t => (counts[t.id] || 0) > 0).slice(0, 8);
+    const agendaEl = document.getElementById('agendaList');
+    if (agenda.length === 0) {
+      agendaEl.innerHTML = `<div style="color:var(--grey); font-size:0.85rem; grid-column:span 2;">等待投票中…</div>`;
+    } else {
+      agendaEl.innerHTML = agenda.map((t, i) => `
+        <div class="agenda-item">
+          <div class="agenda-rank">${i+1}</div>
+          <div>
+            <div class="agenda-name">${t.icon} ${t.name}</div>
+            <div class="agenda-votes">${counts[t.id]} 票</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  } finally {
+    _refreshing = false;
+  }
+}
+
+// ═══════════════════════════════
+// RESET
+// ═══════════════════════════════
+function showResetConfirm() { document.getElementById('confirmOverlay').classList.add('show'); }
+function hideResetConfirm() { document.getElementById('confirmOverlay').classList.remove('show'); }
+async function resetAll() {
+  await fetch(`${DB}.json`, { method: 'DELETE' });
+  hideResetConfirm();
+  hostRefresh();
+}
+
+// Enter key on name input
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') enterPlayer();
+});
+
+// Enter key on password input
+document.getElementById('hostPasswordInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkHostPassword();
+});
+
+// Auto-enter host mode via ?mode=host
+if (new URLSearchParams(location.search).get('mode') === 'host') {
+  if (sessionStorage.getItem('hostAuth') === '1') {
+    enterHost();
+  } else {
+    showPasswordOverlay();
+  }
+}
+</script>
+</body>
+</html>
