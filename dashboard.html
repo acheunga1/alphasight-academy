@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — AlphaSight Academy</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .dash-wide { grid-column: span 2; }
+    .dash-full { grid-column: span 3; }
+
+    .dash-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .dash-card h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--grey);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .dash-card .big-num {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .dash-card .sub-label {
+      font-size: 0.8rem;
+      color: var(--grey);
+      margin-top: 6px;
+    }
+
+    /* Course progress list */
+    .course-list { display: flex; flex-direction: column; gap: 18px; }
+
+    .course-row { }
+
+    .course-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .course-row-header span:first-child {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .course-row-header span:last-child {
+      font-size: 0.8rem;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Activity feed */
+    .activity-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .activity-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .activity-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(201,168,76,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .activity-text { font-size: 0.85rem; line-height: 1.5; }
+    .activity-text strong { color: var(--white); }
+    .activity-time { font-size: 0.75rem; color: var(--grey); margin-top: 2px; }
+
+    /* Achievements */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 14px;
+    }
+
+    .badge-item {
+      text-align: center;
+      padding: 16px 8px;
+      background: var(--dark3);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .badge-item .badge-icon { font-size: 2rem; margin-bottom: 6px; }
+    .badge-item .badge-name { font-size: 0.72rem; color: var(--grey); }
+    .badge-item.earned { border-color: rgba(201,168,76,0.3); background: rgba(201,168,76,0.05); }
+    .badge-item.earned .badge-name { color: var(--gold-light); }
+
+    /* Upcoming */
+    .upcoming-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .upcoming-item {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 14px;
+      background: var(--dark3);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .upcoming-date {
+      text-align: center;
+      min-width: 44px;
+    }
+    .upcoming-date .day { font-size: 1.4rem; font-weight: 800; color: var(--gold); line-height: 1; }
+    .upcoming-date .month { font-size: 0.7rem; color: var(--grey); text-transform: uppercase; }
+
+    .upcoming-info { flex: 1; }
+    .upcoming-info h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+    .upcoming-info p { font-size: 0.78rem; color: var(--grey); }
+
+    @media (max-width: 900px) {
+      .dashboard-grid { grid-template-columns: 1fr 1fr; }
+      .dash-wide { grid-column: span 2; }
+      .dash-full { grid-column: span 2; }
+    }
+
+    @media (max-width: 600px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .dash-wide, .dash-full { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <img src="assets/logos/logo-gold.PNG" alt="AlphaSight" />
+    <span>Academy</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="courses.html">Courses</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+    <li><a href="game.html">Game</a></li>
+  </ul>
+  <a href="courses.html" class="btn btn-gold nav-btn">Start Learning</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>My <span>Dashboard</span></h1>
+  <p>Track your progress, achievements, and upcoming sessions</p>
+</div>
+
+<div class="dashboard-grid">
+
+  <!-- Stats -->
+  <div class="dash-card">
+    <h3>Courses Enrolled</h3>
+    <div class="big-num">4</div>
+    <div class="sub-label">2 in progress · 2 completed</div>
+  </div>
+
+  <div class="dash-card">
+    <h3>Quiz Average</h3>
+    <div class="big-num">78<span style="font-size:1.4rem;">%</span></div>
+    <div class="sub-label">Across 12 quizzes taken</div>
+  </div>
+
+  <div class="dash-card">
+    <h3>Hours Learned</h3>
+    <div class="big-num">24</div>
+    <div class="sub-label">This month</div>
+  </div>
+
+  <!-- Course Progress -->
+  <div class="dash-card dash-wide">
+    <h3>Course Progress</h3>
+    <div class="course-list" style="margin-top:8px;">
+
+      <div class="course-row">
+        <div class="course-row-header">
+          <span>📈 Business Strategy Fundamentals</span>
+          <span>100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+      </div>
+
+      <div class="course-row">
+        <div class="course-row-header">
+          <span>💡 Marketing & Brand Growth</span>
+          <span>100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+      </div>
+
+      <div class="course-row">
+        <div class="course-row-header">
+          <span>💻 Data & Analytics for Business</span>
+          <span>60%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+      </div>
+
+      <div class="course-row">
+        <div class="course-row-header">
+          <span>🧠 Entrepreneurship & Innovation</span>
+          <span>25%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Upcoming -->
+  <div class="dash-card">
+    <h3>Upcoming Sessions</h3>
+    <div class="upcoming-list" style="margin-top:8px;">
+      <div class="upcoming-item">
+        <div class="upcoming-date"><div class="day">15</div><div class="month">Mar</div></div>
+        <div class="upcoming-info">
+          <h4>Leadership Live Session</h4>
+          <p>📡 Online · 7:00 PM HKT</p>
+        </div>
+      </div>
+      <div class="upcoming-item">
+        <div class="upcoming-date"><div class="day">22</div><div class="month">Mar</div></div>
+        <div class="upcoming-info">
+          <h4>Sales Workshop</h4>
+          <p>🏢 Offline · HK Venue</p>
+        </div>
+      </div>
+      <div class="upcoming-item">
+        <div class="upcoming-date"><div class="day">05</div><div class="month">Apr</div></div>
+        <div class="upcoming-info">
+          <h4>Networking Workshop</h4>
+          <p>🏢 Offline · HK Venue</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="dash-card dash-wide">
+    <h3>Recent Activity</h3>
+    <div class="activity-list" style="margin-top:8px;">
+      <div class="activity-item">
+        <div class="activity-icon">✅</div>
+        <div class="activity-text">
+          <strong>Completed</strong> Business Strategy Fundamentals
+          <div class="activity-time">2 days ago</div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-icon">📝</div>
+        <div class="activity-text">
+          <strong>Scored 90%</strong> on Strategy Quiz
+          <div class="activity-time">3 days ago</div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-icon">🎮</div>
+        <div class="activity-text">
+          <strong>Played</strong> Training Game — ranked #2
+          <div class="activity-time">5 days ago</div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-icon">📡</div>
+        <div class="activity-text">
+          <strong>Attended</strong> Public Speaking live session
+          <div class="activity-time">1 week ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Badges -->
+  <div class="dash-card">
+    <h3>Achievements</h3>
+    <div class="badges-grid" style="margin-top:12px;">
+      <div class="badge-item earned">
+        <div class="badge-icon">🏆</div>
+        <div class="badge-name">First Course</div>
+      </div>
+      <div class="badge-item earned">
+        <div class="badge-icon">🎯</div>
+        <div class="badge-name">Quiz Ace</div>
+      </div>
+      <div class="badge-item earned">
+        <div class="badge-icon">⚡</div>
+        <div class="badge-name">Fast Learner</div>
+      </div>
+      <div class="badge-item">
+        <div class="badge-icon">🌟</div>
+        <div class="badge-name">Top Scorer</div>
+      </div>
+      <div class="badge-item">
+        <div class="badge-icon">🎓</div>
+        <div class="badge-name">Graduate</div>
+      </div>
+      <div class="badge-item">
+        <div class="badge-icon">🤝</div>
+        <div class="badge-name">Team Player</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© 2026 <span>AlphaSight HK</span> · AlphaSight Academy · All rights reserved</p>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

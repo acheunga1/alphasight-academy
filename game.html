@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Training Game — AlphaSight Academy</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── LOBBY ── */
+    .lobby {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 0 24px 80px;
+      text-align: center;
+    }
+
+    .game-logo { font-size: 4rem; margin-bottom: 16px; }
+
+    .lobby h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+    .lobby p { color: var(--grey); margin-bottom: 36px; }
+
+    .mode-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .mode-card {
+      background: var(--dark2);
+      border: 2px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-card:hover {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.06);
+    }
+
+    .mode-card .mode-icon { font-size: 2rem; margin-bottom: 10px; }
+    .mode-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .mode-card p { font-size: 0.82rem; color: var(--grey); }
+
+    .room-input {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .room-input input {
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.1);
+      background: var(--dark2);
+      color: var(--white);
+      font-size: 1rem;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .room-input input:focus { border-color: var(--gold); }
+    .room-input input::placeholder { color: var(--grey); }
+
+    /* ── GAME AREA ── */
+    #gameArea { display: none; max-width: 900px; margin: 0 auto; padding: 24px; }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+    }
+
+    .game-info { display: flex; gap: 24px; }
+    .game-stat { text-align: center; }
+    .game-stat .val { font-size: 1.4rem; font-weight: 800; color: var(--gold); }
+    .game-stat .lbl { font-size: 0.7rem; color: var(--grey); }
+
+    .timer-ring {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 3px solid var(--dark3);
+      border-top-color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .timer-ring.paused { animation: none; }
+
+    /* Leaderboard */
+    .leaderboard {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .leaderboard h4 { font-size: 0.8rem; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+    }
+
+    .lb-row:last-child { border-bottom: none; }
+    .lb-rank { width: 24px; font-weight: 700; color: var(--grey); }
+    .lb-rank.gold { color: var(--gold); }
+    .lb-name { flex: 1; }
+    .lb-score { font-weight: 700; color: var(--gold); }
+    .lb-me { color: var(--gold-light); font-style: italic; }
+
+    /* Question */
+    .q-card {
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .q-card .q-label {
+      font-size: 0.78rem;
+      color: var(--gold);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .q-card h2 { font-size: 1.2rem; font-weight: 700; line-height: 1.5; }
+
+    .answers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      padding: 18px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.08);
+      background: var(--dark3);
+      color: var(--white);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .answer-btn:hover { border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.07); }
+    .answer-btn.correct-ans { border-color: var(--success); background: rgba(76,175,80,0.15); }
+    .answer-btn.wrong-ans { border-color: var(--danger); background: rgba(229,57,53,0.1); }
+
+    /* Points pop */
+    .points-pop {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--gold);
+      pointer-events: none;
+      animation: popUp 1s ease forwards;
+      display: none;
+      z-index: 999;
+    }
+
+    @keyframes popUp {
+      0% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%,-100%) scale(1.4); }
+    }
+
+    /* Result */
+    #gameResult {
+      display: none;
+      text-align: center;
+      padding: 48px;
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 16px;
+      margin: 40px auto;
+      max-width: 500px;
+    }
+
+    @media (max-width: 600px) {
+      .mode-cards { grid-template-columns: 1fr; }
+      .answers-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <img src="assets/logos/logo-gold.PNG" alt="AlphaSight" />
+    <span>Academy</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="courses.html">Courses</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="game.html" class="active">Game</a></li>
+  </ul>
+  <a href="courses.html" class="btn btn-gold nav-btn">Start Learning</a>
+</nav>
+
+<!-- LOBBY -->
+<div class="lobby" id="lobby">
+  <div class="game-logo">🎮</div>
+  <h2>AlphaSight <span style="color:var(--gold)">Training Game</span></h2>
+  <p>Compete with teammates in live knowledge battles. Answer fast, score high, climb the leaderboard.</p>
+
+  <div class="mode-cards">
+    <div class="mode-card" onclick="startSolo()">
+      <div class="mode-icon">⚡</div>
+      <h3>Solo Challenge</h3>
+      <p>Race against the clock. Beat your own high score across business topics.</p>
+    </div>
+    <div class="mode-card" onclick="showMultiplayer()">
+      <div class="mode-icon">👥</div>
+      <h3>Multiplayer Room</h3>
+      <p>Join or create a room to compete live with colleagues and peers.</p>
+    </div>
+  </div>
+
+  <div id="multiplayerOptions" style="display:none;">
+    <p style="color:var(--grey-light); margin-bottom:12px;">Enter a Room Code to join, or create a new room:</p>
+    <div class="room-input">
+      <input type="text" id="roomCode" placeholder="Room Code (e.g. ALPHA1)" maxlength="8" />
+      <button class="btn btn-gold" onclick="joinRoom()">Join Room</button>
+    </div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-outline" onclick="createRoom()">+ Create New Room</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME AREA -->
+<div id="gameArea">
+  <div class="game-header">
+    <div class="game-info">
+      <div class="game-stat">
+        <div class="val" id="gScore">0</div>
+        <div class="lbl">Score</div>
+      </div>
+      <div class="game-stat">
+        <div class="val" id="gStreak">0</div>
+        <div class="lbl">Streak 🔥</div>
+      </div>
+      <div class="game-stat">
+        <div class="val" id="gQNum">1</div>
+        <div class="lbl">Q of 10</div>
+      </div>
+    </div>
+    <div class="timer-ring paused" id="timer">15</div>
+    <button class="btn btn-dark" onclick="exitGame()" style="padding:8px 14px; font-size:0.8rem;">✕ Exit</button>
+  </div>
+
+  <!-- Leaderboard (multiplayer) -->
+  <div class="leaderboard" id="leaderboard" style="display:none;">
+    <h4>🏆 Live Leaderboard</h4>
+    <div id="lbRows"></div>
+  </div>
+
+  <!-- Question -->
+  <div class="q-card">
+    <div class="q-label" id="qTopic">Business Strategy</div>
+    <h2 id="gQText">Loading...</h2>
+  </div>
+
+  <div class="answers-grid" id="answersGrid"></div>
+
+  <div class="progress-bar" style="margin-top:20px;">
+    <div class="progress-fill" id="gProgress" style="width:10%"></div>
+  </div>
+</div>
+
+<!-- Points pop -->
+<div class="points-pop" id="pointsPop">+100</div>
+
+<!-- Result -->
+<div id="gameResult">
+  <div style="font-size:3.5rem; margin-bottom:16px;" id="grEmoji">🏆</div>
+  <div style="font-size:2.8rem; font-weight:800; color:var(--gold);" id="grScore">0</div>
+  <div style="color:var(--grey); margin-bottom:8px;" id="grLabel">points earned</div>
+  <div style="font-size:1rem; font-weight:600; margin-bottom:28px;" id="grRank"></div>
+  <div style="display:flex;gap:12px;justify-content:center;">
+    <button class="btn btn-gold" onclick="restartGame()">🔄 Play Again</button>
+    <a href="dashboard.html" class="btn btn-outline">📊 Dashboard</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© 2026 <span>AlphaSight HK</span> · AlphaSight Academy · All rights reserved</p>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// All questions pool
+const ALL_QUESTIONS = [
+  { topic: "Strategy", q: "What does SWOT analysis stand for?", options: ["Speed, Work, Output, Time", "Strengths, Weaknesses, Opportunities, Threats", "Strategy, Work, Operations, Talent", "Sales, Workflow, Operations, Targets"], answer: 1 },
+  { topic: "Strategy", q: "A 'Blue Ocean Strategy' refers to:", options: ["Competing in existing markets", "Creating uncontested market space", "Reducing operational costs", "Expanding overseas"], answer: 1 },
+  { topic: "Marketing", q: "The '4 Ps' of marketing are:", options: ["Product, Price, Place, Promotion", "People, Process, Plan, Profit", "Pitch, Presentation, Pricing, Placement", "Performance, Product, Price, People"], answer: 0 },
+  { topic: "Marketing", q: "What is a 'conversion rate'?", options: ["Currency exchange rate", "Percentage of visitors who take a desired action", "Speed of content creation", "Email open rate"], answer: 1 },
+  { topic: "Leadership", q: "Emotional intelligence in leadership involves:", options: ["Technical skills", "Understanding and managing emotions", "Financial acumen", "Strategic planning"], answer: 1 },
+  { topic: "Leadership", q: "A 'growth mindset' believes:", options: ["Abilities are fixed", "Intelligence can be developed with effort", "Leaders are born not made", "Failure should be avoided"], answer: 1 },
+  { topic: "Sales", q: "What is 'cold calling'?", options: ["Calling existing customers", "Calling prospects with no prior contact", "Following up on a proposal", "Calling angry customers"], answer: 1 },
+  { topic: "Sales", q: "SPIN Selling stands for:", options: ["Sales, Pitch, Interest, Negotiation", "Situation, Problem, Implication, Need-Payoff", "Strategy, Price, Impact, Number", "Speed, Product, Influence, Network"], answer: 1 },
+  { topic: "Strategy", q: "Which growth strategy enters new markets with existing products?", options: ["Market Penetration", "Market Development", "Product Development", "Diversification"], answer: 1 },
+  { topic: "Marketing", q: "A 'buyer persona' is:", options: ["A sales script", "A fictional ideal customer profile", "A legal contract", "A product prototype"], answer: 1 },
+];
+
+let gameQuestions = [];
+let gameIndex = 0;
+let gameScore = 0;
+let gameStreak = 0;
+let timerInterval = null;
+let timeLeft = 15;
+let answered = false;
+let isMultiplayer = false;
+let roomCode = '';
+
+// Fake multiplayer players
+const FAKE_PLAYERS = [
+  { name: 'Alex T.', score: 0 },
+  { name: 'Sam L.', score: 0 },
+  { name: 'Jordan K.', score: 0 },
+];
+
+function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+
+function startSolo() {
+  isMultiplayer = false;
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('leaderboard').style.display = 'none';
+  gameQuestions = shuffle([...ALL_QUESTIONS]).slice(0, 10);
+  gameIndex = 0; gameScore = 0; gameStreak = 0;
+  document.getElementById('gameArea').style.display = 'block';
+  showGameQuestion();
+}
+
+function showMultiplayer() {
+  document.getElementById('multiplayerOptions').style.display = 'block';
+}
+
+function createRoom() {
+  roomCode = 'ALPHA' + Math.floor(1000 + Math.random() * 9000);
+  alert(`Room created! Room Code: ${roomCode}\nShare this code with your teammates.`);
+  startMultiplayer();
+}
+
+function joinRoom() {
+  const code = document.getElementById('roomCode').value.trim().toUpperCase();
+  if (!code) { alert('Please enter a room code.'); return; }
+  roomCode = code;
+  startMultiplayer();
+}
+
+function startMultiplayer() {
+  isMultiplayer = true;
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('leaderboard').style.display = 'block';
+  gameQuestions = shuffle([...ALL_QUESTIONS]).slice(0, 10);
+  gameIndex = 0; gameScore = 0; gameStreak = 0;
+  FAKE_PLAYERS.forEach(p => p.score = 0);
+  document.getElementById('gameArea').style.display = 'block';
+  showGameQuestion();
+  updateLeaderboard();
+}
+
+function updateLeaderboard() {
+  if (!isMultiplayer) return;
+  const all = [{ name: 'You ⭐', score: gameScore, me: true }, ...FAKE_PLAYERS];
+  all.sort((a, b) => b.score - a.score);
+  document.getElementById('lbRows').innerHTML = all.map((p, i) => `
+    <div class="lb-row">
+      <div class="lb-rank ${i === 0 ? 'gold' : ''}">${i === 0 ? '🥇' : i + 1}</div>
+      <div class="lb-name ${p.me ? 'lb-me' : ''}">${p.name}</div>
+      <div class="lb-score">${p.score}</div>
+    </div>
+  `).join('');
+}
+
+function showGameQuestion() {
+  if (gameIndex >= gameQuestions.length) { endGame(); return; }
+  answered = false;
+  const q = gameQuestions[gameIndex];
+  document.getElementById('gQNum').textContent = gameIndex + 1;
+  document.getElementById('gScore').textContent = gameScore;
+  document.getElementById('gStreak').textContent = gameStreak;
+  document.getElementById('gQText').textContent = q.q;
+  document.getElementById('qTopic').textContent = '📚 ' + q.topic;
+  document.getElementById('gProgress').style.width = `${((gameIndex + 1) / gameQuestions.length) * 100}%`;
+
+  const grid = document.getElementById('answersGrid');
+  grid.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.textContent = ['A', 'B', 'C', 'D'][i] + '. ' + opt;
+    btn.onclick = () => selectGameAnswer(i, btn);
+    grid.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+function startTimer() {
+  timeLeft = 15;
+  clearInterval(timerInterval);
+  const el = document.getElementById('timer');
+  el.classList.remove('paused');
+  el.textContent = timeLeft;
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    el.textContent = timeLeft;
+    if (timeLeft <= 5) el.style.color = 'var(--danger)';
+    else el.style.color = 'var(--gold)';
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      el.classList.add('paused');
+      timeExpired();
+    }
+  }, 1000);
+}
+
+function timeExpired() {
+  if (answered) return;
+  answered = true;
+  gameStreak = 0;
+  document.getElementById('gStreak').textContent = 0;
+  const q = gameQuestions[gameIndex];
+  document.querySelectorAll('.answer-btn')[q.answer].classList.add('correct-ans');
+  fakePlayersAnswer();
+  setTimeout(() => { gameIndex++; showGameQuestion(); }, 1800);
+}
+
+function selectGameAnswer(idx, btn) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  document.getElementById('timer').classList.add('paused');
+
+  const q = gameQuestions[gameIndex];
+  const btns = document.querySelectorAll('.answer-btn');
+
+  if (idx === q.answer) {
+    btn.classList.add('correct-ans');
+    const pts = 100 + (timeLeft * 5);
+    gameScore += pts;
+    gameStreak++;
+    if (gameStreak > 1) gameScore += gameStreak * 10; // streak bonus
+    showPointsPop(`+${pts}${gameStreak > 1 ? ' 🔥' : ''}`);
+  } else {
+    btn.classList.add('wrong-ans');
+    btns[q.answer].classList.add('correct-ans');
+    gameStreak = 0;
+  }
+
+  document.getElementById('gScore').textContent = gameScore;
+  document.getElementById('gStreak').textContent = gameStreak;
+  fakePlayersAnswer();
+  updateLeaderboard();
+
+  setTimeout(() => { gameIndex++; showGameQuestion(); }, 1600);
+}
+
+function fakePlayersAnswer() {
+  FAKE_PLAYERS.forEach(p => {
+    if (Math.random() > 0.4) p.score += Math.floor(60 + Math.random() * 80);
+  });
+}
+
+function showPointsPop(text) {
+  const el = document.getElementById('pointsPop');
+  el.textContent = text;
+  el.style.display = 'block';
+  el.style.animation = 'none';
+  el.offsetHeight; // reflow
+  el.style.animation = 'popUp 1s ease forwards';
+  setTimeout(() => { el.style.display = 'none'; }, 1000);
+}
+
+function endGame() {
+  clearInterval(timerInterval);
+  document.getElementById('gameArea').style.display = 'none';
+
+  let rank = '';
+  if (isMultiplayer) {
+    const all = [gameScore, ...FAKE_PLAYERS.map(p => p.score)].sort((a, b) => b - a);
+    const pos = all.indexOf(gameScore) + 1;
+    rank = `You ranked #${pos} out of ${all.length} players`;
+  }
+
+  const pct = gameScore / (10 * 175) * 100;
+  const emoji = pct >= 70 ? '🏆' : pct >= 40 ? '👍' : '📖';
+  document.getElementById('grEmoji').textContent = emoji;
+  document.getElementById('grScore').textContent = gameScore;
+  document.getElementById('grRank').textContent = rank;
+  document.getElementById('gameResult').style.display = 'block';
+}
+
+function restartGame() {
+  document.getElementById('gameResult').style.display = 'none';
+  document.getElementById('lobby').style.display = 'block';
+  document.getElementById('lobby').querySelector('#multiplayerOptions').style.display = 'none';
+}
+
+function exitGame() {
+  clearInterval(timerInterval);
+  document.getElementById('gameArea').style.display = 'none';
+  document.getElementById('gameResult').style.display = 'none';
+  document.getElementById('lobby').style.display = 'block';
+}
+</script>
+</body>
+</html>

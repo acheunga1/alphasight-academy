@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courses — AlphaSight Academy</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .filter-btn {
+      padding: 8px 20px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--dark2);
+      color: var(--grey-light);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201,168,76,0.08);
+    }
+
+    .course-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .course-card:hover {
+      border-color: rgba(201,168,76,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+
+    .course-thumb {
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, var(--dark3), rgba(201,168,76,0.08));
+    }
+
+    .course-body { padding: 20px; }
+
+    .course-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .course-mode {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .mode-online { background: rgba(30,136,229,0.2); color: #64B5F6; }
+    .mode-offline { background: rgba(76,175,80,0.2); color: #81C784; }
+    .mode-live { background: rgba(229,57,53,0.2); color: #EF9A9A; }
+
+    .course-level {
+      font-size: 0.75rem;
+      color: var(--grey);
+    }
+
+    .course-body h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .course-body p {
+      font-size: 0.85rem;
+      color: var(--grey);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .course-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .course-duration { font-size: 0.8rem; color: var(--grey); }
+    .course-enroll {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gold);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .course-enroll:hover { color: var(--gold-light); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <img src="assets/logos/logo-gold.PNG" alt="AlphaSight" />
+    <span>Academy</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="courses.html" class="active">Courses</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="game.html">Game</a></li>
+  </ul>
+  <a href="courses.html" class="btn btn-gold nav-btn">Start Learning</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Our <span>Courses</span></h1>
+  <p>Online, offline, and live programs to fit your schedule</p>
+</div>
+
+<!-- COURSES -->
+<div class="section">
+  <!-- Filter -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterCourses('all', this)">All</button>
+    <button class="filter-btn" onclick="filterCourses('online', this)">🌐 Online</button>
+    <button class="filter-btn" onclick="filterCourses('offline', this)">🏢 Offline</button>
+    <button class="filter-btn" onclick="filterCourses('live', this)">📡 Live</button>
+  </div>
+
+  <!-- Grid -->
+  <div class="cards-grid" id="coursesGrid">
+
+    <div class="course-card" data-mode="online">
+      <div class="course-thumb">📈</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-online">Online</span>
+          <span class="course-level">⭐ Beginner</span>
+        </div>
+        <h3>Business Strategy Fundamentals</h3>
+        <p>Core frameworks for building and evaluating business strategies in competitive markets.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ 6 hours · 8 modules</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card" data-mode="online">
+      <div class="course-thumb">💡</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-online">Online</span>
+          <span class="course-level">⭐⭐ Intermediate</span>
+        </div>
+        <h3>Marketing & Brand Growth</h3>
+        <p>Digital and traditional marketing tactics to grow brand awareness and customer loyalty.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ 8 hours · 10 modules</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card" data-mode="live">
+      <div class="course-thumb">📡</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-live">Live</span>
+          <span class="course-level">⭐ Beginner</span>
+        </div>
+        <h3>Leadership & Team Dynamics</h3>
+        <p>Live interactive sessions on leading teams, managing conflict, and building culture.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ 4 sessions · 2hrs each</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card" data-mode="offline">
+      <div class="course-thumb">🏢</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-offline">Offline</span>
+          <span class="course-level">⭐⭐⭐ Advanced</span>
+        </div>
+        <h3>Sales Mastery Workshop</h3>
+        <p>Full-day in-person workshop in Hong Kong. Role-playing, case studies, and live coaching.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ 1 Day · HK Venue</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card" data-mode="online">
+      <div class="course-thumb">💻</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-online">Online</span>
+          <span class="course-level">⭐⭐ Intermediate</span>
+        </div>
+        <h3>Data & Analytics for Business</h3>
+        <p>Turn raw data into business insights. Excel, dashboards, KPIs, and storytelling with data.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ 10 hours · 12 modules</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card" data-mode="live">
+      <div class="course-thumb">🎤</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-live">Live</span>
+          <span class="course-level">⭐⭐ Intermediate</span>
+        </div>
+        <h3>Public Speaking & Presentation</h3>
+        <p>Live coaching on presentation skills, storytelling, and confident public speaking.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ 3 sessions · 90 mins each</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card" data-mode="offline">
+      <div class="course-thumb">🤝</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-offline">Offline</span>
+          <span class="course-level">⭐⭐ Intermediate</span>
+        </div>
+        <h3>Networking & Relationship Building</h3>
+        <p>Offline workshop on building professional networks, partnership strategies, and follow-up systems.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ Half Day · HK Venue</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card" data-mode="online">
+      <div class="course-thumb">🧠</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="course-mode mode-online">Online</span>
+          <span class="course-level">⭐⭐⭐ Advanced</span>
+        </div>
+        <h3>Entrepreneurship & Innovation</h3>
+        <p>From idea to execution — business models, pitching, funding, and scaling a startup.</p>
+        <div class="course-footer">
+          <span class="course-duration">⏱ 12 hours · 15 modules</span>
+          <span class="course-enroll" onclick="enrollCourse(this)">Enrol →</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© 2026 <span>AlphaSight HK</span> · AlphaSight Academy · All rights reserved</p>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+  function filterCourses(mode, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.course-card').forEach(card => {
+      card.style.display = (mode === 'all' || card.dataset.mode === mode) ? '' : 'none';
+    });
+  }
+
+  function enrollCourse(el) {
+    const title = el.closest('.course-body').querySelector('h3').textContent;
+    alert(`✅ Enrolled in: ${title}\n\nYou can track your progress in the Dashboard.`);
+  }
+</script>
+</body>
+</html>
